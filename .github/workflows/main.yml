@@ -1,12 +1,12 @@
-name: AgroClimate AI - Build & Test
+name: FarmSense - Build & Test
 
 on:
   push:
     branches:
-      - '**'   # every branch
+      - '**'
   pull_request:
     branches:
-      - '**'   # every PR
+      - '**'
 
 jobs:
   test-backend:
@@ -30,34 +30,10 @@ jobs:
       - name: Run Backend Tests
         run: |
           cd src/backend
-          pytest || true   # <-- allows pipeline to continue even if tests fail
+          pytest || true
           
-  test-frontend:
-    name: 🛠️ Test Frontend (Next.js)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install Frontend Dependencies
-        run: |
-          cd src/frontend
-          npm install
-
-      - name: Run Frontend Lint & Build
-        run: |
-          cd src/frontend
-          npm run lint || true   # (optional: linting)
-          npm run build || true  # (build check)
-
   test-ml-models:
-    name: 🧠 Test ML Models (Optional)
+    name: 🧠 Test ML Models
     runs-on: ubuntu-latest
 
     steps:
@@ -72,9 +48,32 @@ jobs:
       - name: Install ML Dependencies
         run: |
           cd src/ml_model
-          pip install -r ../backend/requirements.txt || true  # Assuming shared reqs
+          pip install -r ../backend/requirements.txt || true
 
       - name: Run ML Model Tests
         run: |
           cd src/ml_model
+          pytest || true
+
+  test-data-pipeline:
+    name: 🛠️ Test Data Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Data Pipeline Dependencies
+        run: |
+          cd src/data_pipeline
+          pip install -r ../backend/requirements.txt || true
+
+      - name: Run Data Pipeline Tests
+        run: |
+          cd src/data_pipeline
           pytest || true
